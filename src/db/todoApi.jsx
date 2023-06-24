@@ -13,36 +13,32 @@ class TodoApi {
       },
     });
   }
-  async add(todo) {
+  async getStore() {
     const db = await this.openDB("todos", 1);
     const store = db
       .transaction("todo_store", "readwrite")
       .objectStore("todo_store");
-    const key = await store.add(todo);   
+    return store;
+  }
+  async add(todo) {
+    const store = await this.getStore();
+    const key = await store.add(todo);
     return this.get(key);
   }
   async delete(id) {
-    const db = await this.openDB("todos", 1);
-    const store = db
-      .transaction("todo_store", "readwrite")
-      .objectStore("todo_store");
+    const store = await this.getStore();
     return store.delete(id);
   }
   async update(todo) {
-    const db = await this.openDB("todos", 1);
-    const store = db
-      .transaction("todo_store", "readwrite")
-      .objectStore("todo_store");
+    const store = await this.getStore();
     return store.put(todo);
   }
   async get(key) {
-    const db = await this.openDB("todos", 1);
-    const store = db.transaction("todo_store").objectStore("todo_store");
+    const store = await this.getStore();
     return store.get(key);
   }
   async getAll() {
-    const db = await this.openDB("todos", 1);
-    const store = db.transaction("todo_store").objectStore("todo_store");
+    const store = await this.getStore();
     return store.getAll();
   }
 }
